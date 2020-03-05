@@ -53,7 +53,7 @@ class TBA_Request:
 
     def getEvent(self, event_key):
         ev = Event(event_key)
-        ev.loadTBA(self.tba)
+        ev.loadTBA(self.tba, self.all_teams)
         return ev
         
 
