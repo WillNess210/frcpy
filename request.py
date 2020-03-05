@@ -30,9 +30,11 @@ class TBA_Request:
                 print("{}% teams loaded.".format(int((i + 1)/len(tba_teams)*100)))
         return teams
 
-    def getEvents(self, year):
+    def getEvents(self, year, current_only=False):
         event_keys = self.tba.events(year, keys=True)
-        return [self.getEvent(event_key) for event_key in event_keys]
+        if not current_only:
+            return [self.getEvent(event_key) for event_key in event_keys]
+        return [event for event in [self.getEvent(event_key) for event_key in event_keys] if event.isEventGoingOn()]
 
     def getEvent(self, event_key):
         ev = Event(event_key)
@@ -41,6 +43,7 @@ class TBA_Request:
             if team_key in self.all_teams:
                 self.all_teams[team_key].loadEventWLT(ev)
         return ev
+        
 
     def filterTeamList(self, team_dict = None, state=None, country=None, min_number=None, max_number=None, event_code=None):
         if team_dict == None:
