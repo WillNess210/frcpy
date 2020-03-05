@@ -54,7 +54,7 @@ class Team(Location):
         return self.attrs[key] if key in self.attrs else None
 
     def __str__(self):
-        return "FRC" + str(self.team_number)
+        return "frcpy_frc" + str(self.team_number)
 
 class Match:
     def __init__(self):
@@ -162,3 +162,6 @@ class Event(Location):
 
     def isOfficial(self):
         return self.event_type <= 6
+    
+    def __str__(self):
+        return "frcpy_" + str(self.key)
