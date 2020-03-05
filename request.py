@@ -33,16 +33,27 @@ class TBA_Request:
                 print("{}% teams loaded.".format(int((i + 1)/len(tba_teams)*100)))
         return teams
 
+    def getEventsKeys(self, year, current_only=False, must_include_teams = None):
+        events = self.tba.events(year, simple = True)
+        event_keys = [event.key for event in events]
+        if current_only:
+            event_keys = [event.key for event in events if event.start_date <= getCurrentDate() and event.end_date >= getCurrentDate()]
+        if must_include_teams:
+            n_event_keys = []
+            for event_key in event_keys:
+                event_team_keys = self.tba.event_teams(event_key, keys=True)
+                if any([team in must_include_teams for team in event_team_keys]):
+                    n_event_keys.append(event_key)
+            event_keys = n_event_keys
+        return event_keys
+
     def getEvents(self, year, current_only=False, must_include_teams = None):
-        event_keys = self.tba.events(year, keys=True) if not current_only else [event.key for event in self.tba.events(year, simple=True) if event.start_date <= getCurrentDate() and event.end_date >= getCurrentDate()]
-        return [self.getEvent(event_key) for event_key in event_keys] if must_include_teams == None else [event for event in [self.getEvent(event_key) for event_key in event_keys] if any([team in event.teams for team in must_include_teams])]
+        event_keys = self.getEventsKeys(year, current_only=current_only, must_include_teams=must_include_teams)
+        return [self.getEvent(event_key) for event_key in event_keys]
 
     def getEvent(self, event_key):
         ev = Event(event_key)
         ev.loadTBA(self.tba)
-        for team_key in ev.teams:
-            if team_key in self.all_teams:
-                self.all_teams[team_key].loadEventWLT(ev)
         return ev
         
 

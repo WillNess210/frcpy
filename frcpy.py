@@ -62,8 +62,6 @@ class Match:
         self.blue_teams = [] #team_keys
         self.finished = False
         # used for discovery
-        self.hasBeenAnnounced = False
-        self.hasBeenReported = False
         self.attrs = {}
 
     def loadTBAData(self, match_tba_data):
@@ -108,6 +106,7 @@ class Event(Location):
         self.key = key
         self.matches = {} # match key -> match object
         self.teams = [] # team keys
+        self.attrs = {}
 
     def getTeamObjects(self, team_list): #team_list = list of Team objects
         teams = []
@@ -118,10 +117,14 @@ class Event(Location):
             print("Beware {} couldn't load correct number of teams.".format(self.key))
         return teams
 
-    def loadTBA(self, tba):
+    def loadTBA(self, tba, all_teams):
         self.loadTBAData(tba.event(self.key))
         self.updateMatches(tba)
         self.loadTeamKeys(tba)
+        # update w/l/t
+        for team_key in self.teams:
+            if team_key in all_teams:
+                all_teams[team_key].loadEventWLT(self)
 
     def updateMatches(self, tba):
         for match in tba.event_matches(self.key):
@@ -165,3 +168,6 @@ class Event(Location):
     
     def __str__(self):
         return "frcpy_" + str(self.key)
+
+    def getAttr(self, key):
+        return self.attrs[key] if key in self.attrs else None
