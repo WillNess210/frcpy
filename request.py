@@ -1,6 +1,7 @@
 from tbapy import TBA
 from . import Event, Team
 import math
+from datetime import datetime
 
 def teamsDictToList(teams):
     return [teams[team] for team in teams]
