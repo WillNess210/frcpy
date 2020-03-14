@@ -17,8 +17,7 @@ class TBA_Request:
 
     def __init__(self, tba_auth_key, year=None):
         self.tba = TBA(tba_auth_key)
-        self.all_teams = self.getAllTeams(year=year)
-        self.events = {}
+        self.all_teams = self.getAllTeams(year=year) # {team_key -> Team}
 
     def getAllTeams(self, year=None):
         
@@ -79,4 +78,6 @@ class TBA_Request:
             self.all_teams[team].attrs[key] = value
 
     def getRankedTeamListByAttr(self, key, reverse = True, n=10):
-        return [v for k, v in sorted(self.all_teams.items(), key = lambda team: team[1].attrs[key], reverse=reverse)][:min(len(self.all_teams), n)]
+        if n == None:
+            n = len(self.all_teams)
+        return [v for k, v in sorted([team for team in self.all_teams.items() if key in team[1].attrs], key = lambda team: team[1].attrs[key], reverse=reverse)][:min(len(self.all_teams), n)]
